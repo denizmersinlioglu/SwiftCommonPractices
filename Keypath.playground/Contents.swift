@@ -2,6 +2,7 @@ import Foundation
 // WWDC 2017: Whats New in Foundation
 
 // (??) Research what is @objcMembers and dynamic means
+// Also Watch -> What is new in Cocoa && Efficient Interactions with Frameworks
 @objcMembers
 class Kid: NSObject{
     dynamic var nickname: String = ""
