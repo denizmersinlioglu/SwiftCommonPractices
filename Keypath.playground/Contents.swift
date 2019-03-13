@@ -21,8 +21,8 @@ let nicknamePath = \Kid.nickname  // -> \BaseType.PropertyName && \.nickname -> 
 let characters = \Kid.nickname.count // -> Key paths can be composed in sequence
 let bestFriend = \Kid.bestFriend?.nickname // -> Optional chaining in key paths
 let firstFriend = \Kid.friends[0] // -> Indirection through subscripts
-
 var ben = Kid(nickname: "Benji", age: 6)
+let asd = ben[keyPath: nicknamePath]
 ben[keyPath: \Kid.nickname] = "Ben"
 let mia = Kid(nickname: "Mia", age: 6.5)
 
