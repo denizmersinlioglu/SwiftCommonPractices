@@ -3,4 +3,10 @@ A bare compilation that containing my implementations of the topics cosidered in
 
 > Every directory consists related playground. Future work will be labeled by related content.
 
-* KeyPath --> WWDC 2017 - Session 212 
+#### KeyPath ####
+* What's New in Foundation - WWDC 2017/Session 212
+* Link: https://developer.apple.com/videos/play/wwdc2017/212
+
+#### Pattern Matching ####
+* Pattern matching in Swift - Swift by Sundell
+* Link: https://www.swiftbysundell.com/posts/pattern-matching-in-swift
