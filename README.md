@@ -10,3 +10,9 @@ A bare compilation that containing my implementations of the topics cosidered in
 #### Pattern Matching ####
 * Pattern matching in Swift - Swift by Sundell
 * Link: https://www.swiftbysundell.com/posts/pattern-matching-in-swift
+
+#### Embracing Algorithms ####
+* Embracing Algorithms - WWDC 2018/Session 223
+* Link: https://developer.apple.com/videos/play/wwdc2018/223/
+* Swift Documentation - NSHipster
+* Link: https://nshipster.com/swift-documentation/
