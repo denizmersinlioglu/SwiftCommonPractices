@@ -16,3 +16,8 @@ A bare compilation that containing my implementations of the topics cosidered in
 * Link: https://developer.apple.com/videos/play/wwdc2018/223/
 * Swift Documentation - NSHipster
 * Link: https://nshipster.com/swift-documentation/
+
+#### WKWebViewCustomLoad  ####
+* Customized Loading in WKWebView - WWDC 2017/Session 220
+* Link: https://developer.apple.com/videos/play/wwdc2017/220/
+
