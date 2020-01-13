@@ -1,5 +1,31 @@
 import UIKit
+import Foundation
 
+// LINK: https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Predicates/AdditionalChapters/Introduction.html#//apple_ref/doc/uid/TP40001789
+
+// - A comparison predicate compares two expressions using an operator.
+// - A compound predicate compares the results of evaluating two or more other predicates, or negates another predicate.
+
+// Key-value coding: Indirectly accessing an object's attributes and relationships using string identifiers.
+// Cocoa provides NSPredicate and its two subclasses, NSComparisonPredicate and NSCompoundPredicate.
+
+
+class KVCExample: NSObject{
+    
+    override func value(forKey key: String) -> Any? {
+        super.value(forKey: key)
+    }
+    
+    override func setValue(_ value: Any?, forKey key: String) {
+        super.setValue(value, forKey: key)
+    }
+}
+
+// LINK: https://www.swiftbysundell.com/articles/predicates-in-swift/
+// predicate: Predication (computer architecture), a choice to execute or not to execute a given instruction based on the content of a machine register
+
+
+// Filtering a collection of models
 extension Date {
     static var now: Date { Date() }
 }
@@ -22,7 +48,7 @@ struct TodoList {
     // Classic implementation that doesn't use predicate.
     // We can create a more swifty implementation for our API with predicates.
     func futureItems(basedOnDate date: Date = .now) -> [TodoItem] {
-        items.filter { !$0.isCompleted && $0.dueDate > date }
+        items.filter { !$0.isCompleted && $0.dueDate > date } // Note that single line functions do not have return key word.
     }
 
     func overdueItems(basedOnDate date: Date = .now) -> [TodoItem] {
@@ -35,6 +61,7 @@ struct TodoList {
 }
 
 
+
 // Before we can apply a predicate to our array, we must
 // first convert it into an Objective-C-based NSArray:
 let list = TodoList(name: "CheckList")
@@ -45,6 +72,7 @@ let overdueItems = array.filtered(using: NSPredicate(
     format: "isCompleted == false && dueDate < %@",
     NSDate()
 ))
+// NSPredicate -> A definition of logical conditions used to constrain a search either for a fetch or for in-memory filtering.
 // String based queries used to retrieve data. -> Don't have compile time safety.
 // Need to turn our objects to NSObjects -> Can't use value semantics and require conform to objc conventions. -> Enable dynamic string-base access to our properties.
 
