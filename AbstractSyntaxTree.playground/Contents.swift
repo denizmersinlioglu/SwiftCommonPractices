@@ -11,6 +11,22 @@ func circularArrayRotation(a: [Int], k: Int, queries: [Int]) -> [Int] {
 let b = -24 % 5
 let c = b < 0 ? b + 5 : b
 
+//MARK: - HackerRank Jumping on the Clouds
+func jumpingOnClouds(c: [Int]) -> Int {
+    var index = 0
+    var jumpCount = 0
+    while index < c.count - 1{
+        if index + 2 < c.count{
+            index = index + (c[index+2] == 0 ? 2 : 1)
+        }else{
+            index = index + 1
+        }
+        jumpCount += 1
+        print("jumpCount \(jumpCount), index \(index)")
+    }
+    return jumpCount
+}
+
 //MARK: - HackerRank Save the Prisoner!
 func saveThePrisoner(n: Int, m: Int, s: Int) -> Int {
     let a = s+m-1
@@ -93,6 +109,133 @@ func hurdleRace(k: Int, height: [Int]) -> Int {
     return k >= maxHeight ? 0 : abs(maxHeight - k)
 }
 
+
+jumpingOnClouds(c: [0, 0, 0, 1, 0, 0])
+
+//MARK: - HackerRank Repeated String
+func repeatedString(s: String, n: Int) -> Int {
+    let count = s.filter{ String($0) == "a"}.count
+    let multipleTotal = (n / s.count) * count
+    let rem = s.prefix(n % s.count).filter{ String($0) == "a"}.count
+    return multipleTotal + rem
+}
+
+repeatedString(s: "a", n: 1000000000000)
+
+//MARK: - HackerRank NonDivisibleSubset
+func nonDivisibleSubset(k: Int, s: [Int]) -> Int {
+    let modArray = s.map{ $0 % k }
+    return (0...k/2).map { (item) -> Int in
+        if item == 0 || (k%2 == 0 && item == k/2){
+            return modArray.filter{$0 == item}.isEmpty ? 0 : 1
+        }
+        let modCount = modArray.filter{$0 == item}.count
+        let reverseModCount = modArray.filter{$0 == k - item}.count
+        return max(modCount, reverseModCount)
+    }.reduce(0, +)
+}
+
+nonDivisibleSubset(k: 4, s: [19,10,12,10,24,25,22])
+
+//MARK: - HackerRank Sherlock and Squares
+func squares(a: Int, b: Int) -> Int {
+    let aSqrt = floor(sqrt(Double(a)-0.5))
+    let bSqrt = floor(sqrt(Double(b)+0.5))
+    return Int(bSqrt - aSqrt)
+}
+
+squares(a: 17, b: 24)
+
+//MARK: - HackerRank Append and Delete
+func appendAndDelete(s: String, t: String, k: Int) -> String {
+    if s.count + t.count < k {return "Yes"}
+    var baseCount = 0
+    for (first, second) in zip(s, t){
+        if first == second{ baseCount += 1 }
+        else{ break }
+    }
+    let operationCount = s.count + t.count - 2*baseCount
+    guard k-operationCount >= 0 else {return "No"}
+    return (k - operationCount) % 2 == 0 ? "Yes" : "No"
+}
+
+appendAndDelete(s: "qwerasdf", t: "qwerbsdf", k: 6)
+
+//MARK: - HackerRank Extra Long Factorials
+func extraLongFactorials(n: Int) -> Void {
+    guard n > 2 else {return print(1)}
+    func carryAll(_ arr: [Int]) -> [Int] {
+        print("Start Carry with: \(arr)")
+        var result = [Int]()
+
+        var carry = 0
+        for val in arr.reversed() {
+            let total = val + carry
+            let digit = total % 10
+            carry = total / 10
+            result.append(digit)
+        }
+
+        while carry > 0 {
+            let digit = carry % 10
+            carry = carry / 10
+            result.append(digit)
+        }
+        let out = Array(result.reversed())
+        print("End Carry with: \(out)")
+        print("")
+        return result.reversed()
+    }
+    
+    var result = [1]
+    for i in 2...n {
+        result = result.map { $0 * i }
+        result = carryAll(result)
+    }
+
+    print(result.map(String.init).joined())
+
+}
+
+extraLongFactorials(n: 21)
+
+
+//MARK: - HackerRank Find Digits
+func findDigits(n: Int) -> Int {
+    let stringDigits = "\(n)"
+    return stringDigits.filter { (char) -> Bool in
+        guard let intChar = Int(String(char)) else {return false}
+        guard intChar != 0 else {return false}
+        return n % intChar == 0
+    }.count
+}
+
+findDigits(n: 1012)
+
+//MARK: - HackerRank Jumping on Clouds
+func jumpingOnClouds(c: [Int], k: Int) -> Int {
+    var e = 100
+    var index = 0
+    repeat{
+        index = ( index + k ) % c.count
+        e = c[index] == 1 ? (e - 3) : (e - 1)
+    } while (index != 0 && e > 0)
+    return e
+}
+
+jumpingOnClouds(c: [0, 0, 1, 0, 0, 1, 1, 0], k: 2)
+
+//MARK: - HackerRank Permutation Equation
+func permutationEquation(p: [Int]) -> [Int] {
+    var inverseP = Array(repeating: 0, count: p.count)
+    p.enumerated().forEach { arg0  in
+        let (index, element) = arg0
+        inverseP[element-1] = index
+    }
+    return (0..<p.count).map{inverseP[inverseP[$0]] + 1}
+}
+
+permutationEquation(p: [4, 3, 5, 1, 2])
 
 //MARK: - HackerRank Climbing the Leaderboard
 func climbingLeaderboard(scores: [Int], alice: [Int]) -> [Int] {
