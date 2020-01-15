@@ -1,30 +1,140 @@
 import UIKit
 
+//MARK: - HackerRank Circular Array Rotation
+func circularArrayRotation(a: [Int], k: Int, queries: [Int]) -> [Int] {
+    return queries.map { item in
+        let index = (item-k) % a.count
+        let positiveIndex = index < 0 ? index + a.count : index
+        return a[positiveIndex]
+    }
+}
+let b = -24 % 5
+let c = b < 0 ? b + 5 : b
+
+//MARK: - HackerRank Save the Prisoner!
+func saveThePrisoner(n: Int, m: Int, s: Int) -> Int {
+    let a = s+m-1
+    if (a>n){
+        return a%n == 0 ? n : a%n
+    }
+    return a
+}
+
+
+//MARK: - HackerRank Viral Advertising
+func viralAdvertising(n: Int) -> Int {
+    var shared = 5
+    var liked = 0
+    var sum = 0
+    for _ in (1...n){
+        liked = shared/2
+        sum += liked
+        shared = liked * 3
+        print(sum)
+    }
+    return sum
+}
+
+viralAdvertising(n: 3)
+
+//MARK: - HackerRank Beautiful Days at the Movies
+func beautifulDays(i: Int, j: Int, k: Int) -> Int {
+    func reverseNumber(_ n: Int) -> Int{
+        var temp = n
+        var reverse = 0
+        while temp > 0{
+            reverse = reverse * 10
+            reverse = reverse + temp % 10
+            temp = temp/10
+        }
+        return reverse
+    }
+    return (i...j).filter{ abs($0 - reverseNumber($0)) % k == 0 }.count
+}
+
+//MARK: - HackerRank Angry Professor
+func angryProfessor(k: Int, a: [Int]) -> String {
+    return a.filter{$0 <= 0}.count >= k ? "NO" : "YES"
+}
+
+
+//MARK: - HackerRank Utopian Tree
+func utopianTree(n: Int) -> Int {
+    if n == 0 {return 1}
+    var currentHeight = 1
+    for i in (1...n){
+        if i % 2 != 0{
+            currentHeight = currentHeight * 2
+        }else{
+            currentHeight = currentHeight + 1
+        }
+    }
+    return currentHeight
+}
+
+
+//MARK: - HackerRank Designer PDF Viewer
+func designerPdfViewer(h: [Int], word: String) -> Int {
+    let mapStrings = "abcdefghijklmnopqrstuvwxyz"
+    var heightDic: [Character: Int] = [:]
+    mapStrings.enumerated().forEach { (arg0) in
+        let (offset, element) = arg0
+        heightDic[element] = h[offset]
+    }
+    let maxHeight = word.map { char in
+        return heightDic[char] ?? 0
+    }.max() ?? 0
+    return maxHeight * word.count
+}
+
+//MARK: - HackerRank The Hurdle Race
+func hurdleRace(k: Int, height: [Int]) -> Int {
+    let maxHeight = height.max() ?? 0
+    return k >= maxHeight ? 0 : abs(maxHeight - k)
+}
+
 
 //MARK: - HackerRank Climbing the Leaderboard
 func climbingLeaderboard(scores: [Int], alice: [Int]) -> [Int] {
-    let uniqueScores = Set(scores).sorted{$0>$1}
+    var uniqueScores = [Int]()
+    uniqueScores.append(scores[0])
     
-    return alice.map { score -> Int in
-        var hi: Int = 0
-        var lo: Int = uniqueScores.count - 1
-        var mid: Int = Int(floor(Double(hi + lo) / 2))
-        while true{
-            if uniqueScores[mid] >= score{
-                hi = mid + 1
+    for i in (1..<scores.count){
+        if scores[i] != scores[i-1]{
+             uniqueScores.append(scores[i])
+        }
+    }
+    
+    func binarySearch(in numbers: [Int], for value: Int) -> Int{
+        var left = 0
+        var right = numbers.count - 1
+        var middle = 0
+        
+        while left <= right {
+
+            middle = Int(floor(Double(left + right) / 2.0))
+
+            if numbers[middle] > value {
+                left = middle + 1
+            } else if numbers[middle] < value {
+                right = middle - 1
+            } else {
+                return middle
             }
-            else if uniqueScores[mid] <= score{
-                lo = mid - 1
-            }
-            mid = Int(floor(Double(hi + lo) / 2))
-            if (lo==hi) {break;}
         }
         
-        return mid
+        if numbers[middle] < value {
+            middle = middle - 1
+        }
+        return middle + 1
+    }
+    
+    return alice.map { score -> Int in
+        return binarySearch(in: uniqueScores, for: score) + 1
     }
 }
 
-climbingLeaderboard(scores: [100, 50, 40, 20, 10], alice: [5, 25, 50, 120])
+climbingLeaderboard(scores: [100, 90, 90, 80, 75, 60], alice: [50, 65, 77, 90, 102])
 
 //MARK: - HackerRank Picking Numbers
 func pickingNumbers(a: [Int]) -> Int {
