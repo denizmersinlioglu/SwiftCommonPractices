@@ -1,5 +1,253 @@
 import UIKit
 
+
+//MARK: - HackerRank ACM ICPC Team
+
+//MARK: - HackerRank Queen's Attack II
+func queensAttack(n: Int, k: Int, r_q: Int, c_q: Int, obstacles: [[Int]]) -> Int {
+        
+    enum QueenMove {
+        case up, down, right, left, upLeft, upRight, downLeft, downRight
+        static var all: [QueenMove] = [.up, .down, .right, .left,
+                                       .upLeft, .upRight, .downLeft, .downRight]
+    }
+    
+    var dict: [QueenMove: Int] = [ .up: n - r_q, .down: r_q-1,
+                                   .right: n - c_q, .left: c_q-1,
+                                   .upLeft: min(c_q-1, n-r_q), .upRight: min(n-r_q, n-c_q),
+                                   .downLeft: min(r_q-1, c_q-1), .downRight: min(r_q-1, n-c_q) ]
+    for i in (0..<k){
+        let r = obstacles[i][0]
+        let c = obstacles[i][1]
+        
+        if (c == c_q && r>r_q), let prev = dict[.up]{
+            let d = r-r_q-1
+            if d<prev { dict[.up] = d }
+            
+        }else if (c == c_q && r<r_q), let prev = dict[.down]{
+            let d = r_q-r-1
+            if d<prev { dict[.down] = d }
+            
+        }else if (r == r_q && c < c_q), let prev = dict[.left]{
+            let d = c_q-c-1
+            if d<prev { dict[.left] = d }
+            
+        }else if (r == r_q && c > c_q), let prev = dict[.right]{
+            let d = c-c_q-1
+            if d<prev { dict[.right] = d }
+            
+        }else if ((r-r_q)==(c-c_q) && r>r_q && c>c_q), let prev = dict[.upRight]{
+            let d = r-r_q-1
+            if d<prev { dict[.upRight] = d }
+            
+        }else if (r>r_q && c<c_q && ((c_q-c)==(r-r_q)) ), let prev = dict[.upLeft]{
+            let d = r-r_q-1
+            if d<prev { dict[.upLeft] = d }
+            
+        }else if (c>c_q && r<r_q && ((r_q-r)==(c-c_q)) ), let prev = dict[.downRight]{
+            let d = r_q-r-1
+            if d<prev { dict[.downRight] = d }
+            
+        }else if (r_q>r && c_q>c && ((r_q-r)==(c_q-c)) ), let prev = dict[.downLeft]{
+            let d = r_q-r-1
+            if d<prev { dict[.downLeft] = d }
+        }
+    }
+    return QueenMove.all.reduce(0) { $0 + (dict[$1] ?? 0)}
+}
+
+queensAttack(n: 5, k: 3, r_q: 4, c_q: 3, obstacles: [[5,5],[4,2], [2,3]])
+
+func queensAttack3(n: Int, k: Int, r_q: Int, c_q: Int, obstacles: [[Int]]) -> Int {
+    typealias Pos = (Int,Int)
+    
+    let obs = obstacles.filter { (obs) -> Bool in
+        let rel: Pos = (obs[0] - r_q, obs[1] - c_q)
+        return rel.0 == 0 || rel.1 == 0 || (abs(rel.0) == abs(rel.1))
+    }
+    
+    enum QueenMove {
+        case up, down, right, left, upLeft, upRight, downLeft, downRight
+        static var all: [QueenMove] = [.up, .down, .right, .left,
+                                       .upLeft, .upRight, .downLeft, .downRight]
+    }
+    
+    let moveDict: [QueenMove: Pos] =
+        [.up: (1,0), .down: (-1,0), .right: (0,1), .left: (0,-1),
+        .upLeft: (1,-1), .upRight: (1,1), .downLeft: (-1,-1), .downRight: (-1,1)]
+    
+    func moveQueen(from pos: Pos, with move: QueenMove) -> Pos{
+        let move = moveDict[move] ?? (0,0)
+        return (pos.0 + move.0, pos.1 + move.1)
+    }
+    
+    func isObstacle(pos: Pos) -> Bool{
+        return obs.firstIndex { $0[0] == pos.0 && $0[1] == pos.1 } != nil
+    }
+    
+    func inBounds(pos: Pos) -> Bool{
+        return pos.0 <= n && pos.0 > 0 && pos.1 <= n && pos.1 > 0
+    }
+    
+    func calculateMove(for move: QueenMove) -> Int{
+        var count = 0
+        var currentPosition = (r_q, c_q)
+        while true{
+            let nextPosition = moveQueen(from: currentPosition, with: move)
+            print("current Pos: \(currentPosition)")
+            print("next Pos: \(nextPosition)")
+            currentPosition = nextPosition
+            if isObstacle(pos: nextPosition) || !inBounds(pos: nextPosition){
+                break
+            }else{
+                count += 1
+            }
+        }
+        print("End to move for: \(move), count \(count)\n")
+        return count
+    }
+    
+    return QueenMove.all.reduce(0) { $0 + calculateMove(for: $1) }
+}
+
+func queensAttack2(n: Int, k: Int, r_q: Int, c_q: Int, obstacles: [[Int]]) -> Int {
+    typealias Container = [(Int,Int)]
+
+    func inBounds(c: (Int,Int)) -> Bool{
+        return c.0 > 0 && c.0<=n && c.1 > 0 && c.1<=n
+    }
+    
+    func distanceTo(obstacle: [Int]) -> Int{
+        let dis = abs(obstacle.reduce(0, +) - r_q - c_q) - 1
+        print("Distance to obstacle: \(obstacle) is \(dis)")
+        return dis
+    }
+    
+    func diagDistanceTo(obstacle: [Int]) -> Int{
+        guard obstacle[0] != r_q else {return 0}
+        let dis = abs(obstacle[0] - r_q) - 1
+        print("Distance to diagonal obstacle: \(obstacle) is \(dis)")
+        return dis
+    }
+    
+    var diag0 = Container()
+    var diag1 = Container()
+    for i in (-n...n){
+        diag0.append((r_q+i, c_q+i))
+        diag1.append((r_q-i, c_q+i))
+    }
+    diag0 = diag0.filter{ inBounds(c: $0) }
+    diag1 = diag1.filter{ inBounds(c: $0) }
+    
+    print("diag0 \(diag0)")
+    print("diag1 \(diag1)")
+    
+    let leftObstacle = obstacles
+        .filter{$0[0] == r_q && $0[1] < c_q}
+        .min { abs($0[1] - c_q) < abs($1[1]-c_q) } ?? [r_q, 0]
+    let rightObstacle = obstacles
+        .filter{$0[0] == r_q && $0[1] > c_q}
+        .min { abs($0[1] - c_q) < abs($1[1]-c_q) } ?? [r_q, n+1]
+    let upObstacle = obstacles
+        .filter{$0[1] == c_q && $0[0] > r_q}
+        .min { abs($0[0] - r_q) < abs($1[0]-r_q) } ?? [n+1, c_q]
+    let downObstacle = obstacles
+        .filter{$0[1] == c_q && $0[0] < r_q}
+        .min { abs($0[0] - r_q) < abs($1[0]-r_q) } ?? [0, c_q]
+    
+    let endPoints = [leftObstacle, rightObstacle, upObstacle, downObstacle]
+    
+    let diagUpLeft = obstacles
+        .filter { ($0[1] - c_q == $0[0] - r_q) && $0[0] > r_q && $0[0] < c_q }
+        .min { abs($0[0] - r_q) + abs($0[1] - c_q) < abs($1[0] - r_q) + abs($1[1] - c_q) } ?? [diag1.first!.0 + 1 , diag1.first!.1 - 1 ]
+    let diagDownRight = obstacles
+        .filter { ($0[1] - c_q == $0[0] - r_q) && $0[0] < r_q && $0[0] > c_q }
+        .min { abs($0[0] - r_q) + abs($0[1] - c_q) < abs($1[0] - r_q) + abs($1[1] - c_q) } ?? [diag1.last!.0 - 1 , diag1.last!.1 + 1]
+    
+    let diagUpRight = obstacles
+        .filter { ($0[1] - c_q == $0[0] - r_q) && $0[0] > r_q && $0[0] > c_q }
+        .min { abs($0[0] - r_q) + abs($0[1] - c_q) < abs($1[0] - r_q) + abs($1[1] - c_q) } ?? [diag0.last!.0 + 1, diag0.last!.1 + 1]
+    let diagDownLeft = obstacles
+        .filter { ($0[1] - c_q == $0[0] - r_q) && $0[0] < r_q && $0[0] < c_q }
+        .min { abs($0[0] - r_q) + abs($0[1] - c_q) < abs($1[0] - r_q) + abs($1[1] - c_q) } ?? [diag0.first!.0 - 1 , diag0.first!.1 - 1]
+    
+    
+    let diagEndPoints = [diagUpLeft, diagUpRight, diagDownLeft, diagDownRight]
+    
+    let sum = endPoints.reduce(0) { (res, item) -> Int in
+        return res + distanceTo(obstacle: item)
+    }
+    
+    let sumDiag = diagEndPoints.reduce(0) { (res, item) -> Int in
+        return res + diagDistanceTo(obstacle: item)
+    }
+    return sum + sumDiag
+
+}
+
+
+
+//MARK: - HackerRank Equalize the Array
+func equalizeArray(arr: [Int]) -> Int {
+    var dict: [Int: Int] = [:]
+    arr.forEach { (item) in
+        if let count = dict[item] {
+            dict[item] = count + 1
+        }else{
+            dict[item] = 1
+        }
+    }
+    let maxCount = dict.max { (first, second) -> Bool in
+        return second.1 > first.1
+    }?.value ?? 0
+    return arr.count - maxCount
+}
+
+equalizeArray(arr: [3, 3, 2, 1, 3])
+
+//MARK: - HackerRank Cut the sticks
+func cutTheSticks(arr: [Int]) -> [Int] {
+    var notZeroCount = arr.count
+    var sticksCut: [Int] = [arr.count]
+    var temp = arr
+    
+    while notZeroCount > 0{
+        let minVal = temp.filter{$0>0}.min()
+        guard let min = minVal else {break}
+        temp = temp.map{ item in
+            if item > 0 {
+                return item - min
+            }else{
+                return 0
+            }
+        }
+        notZeroCount = temp.filter{$0>0}.count
+        if notZeroCount != 0{
+            sticksCut.append(notZeroCount)
+        }
+    }
+    return sticksCut
+}
+
+cutTheSticks(arr: [1, 2, 3, 4, 3, 3, 2, 1])
+
+//MARK: - HackerRank Library Fine
+func libraryFine(d1: Int, m1: Int, y1: Int, d2: Int, m2: Int, y2: Int) -> Int {
+    let dueDate = d2 + m2 * 30 + y2 * 365
+    let returnDate = d1 + m1 * 30 + y1 * 365
+    guard returnDate > dueDate else {return 0}
+    if y1 > y2{
+        return (y1-y2)*10000
+    }else if m1 > m2{
+        return (m1-m2)*500
+    }else if d1 > d2{
+        return(d1-d2)*15
+    }else{
+        return 0
+    }
+}
+libraryFine(d1: 9, m1: 6, y1: 2015, d2: 6, m2: 6, y2: 2015)
+
 //MARK: - HackerRank Circular Array Rotation
 func circularArrayRotation(a: [Int], k: Int, queries: [Int]) -> [Int] {
     return queries.map { item in
