@@ -1,6 +1,86 @@
 import Foundation
 
+//MARK: - Service Lane
+func serviceLane(n: Int, width: [Int], cases: [[Int]]) -> [Int] {
+    return cases.map { width[$0[0]...$0[1]].min() ?? 0 }
+}
 
+serviceLane(n: 8, width: [2, 3, 1, 2, 3, 2, 3, 3,], cases: [[0,3], [4,6], [6,7], [3,5],[0,7]])
+
+//MARK: - Chocolate Feast
+func chocolateFeast(n: Int, c: Int, m: Int) -> Int {
+    var money = n
+    var wrappers = 0
+    var count = 0
+    
+    while money >= c{
+        count += money/c
+        wrappers += money/c
+        money = money%c
+        if wrappers >= m {
+            money += wrappers/m * c
+            wrappers = wrappers % m
+        }
+    }
+    return count
+}
+
+chocolateFeast(n: 10, c: 2, m: 5)
+
+//MARK: - The Time in Words
+func timeInWords(h: Int, m: Int) -> String {
+    let words = [1: "one", 2: "two",   3: "three", 4: "four",  5: "five",
+        6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten",
+        11: "eleven",   12: "twelve",  13: "thirteen",   14: "fourteen",
+        15: "fifteen",  16: "sixteen", 17: "seventeen",  18: "eighteen",
+        19: "nineteen", 20: "twenty",  21: "twenty one", 22: "twenty two",
+        23: "twenty three", 24: "twenty four",  25: "twenty five",
+        26: "twenty six",   27: "twenty seven", 28: "twenty eight",
+        29: "twenty nine"]
+    
+    if m == 0{
+        return words[h]! + " o' clock"
+    }else if m == 30{
+        return "half past " + words[h]!
+    }else if m < 30{
+        if m == 1 {
+            return "one minute past " + words[h]!
+        }else if m == 15{
+            return "quarter past " + words[h]!
+        }else{
+            return words[m]! + " minutes past " + words[h]!
+        }
+    }else{
+        let m2 = 60 - m
+        let h2 = h + 1
+        
+        if m2 == 1{
+            return "one minute to " + words[h2]!
+        }else if m2 == 15{
+            return "quarter to " + words[h2]!
+        }else{
+            return words[m2]! + " minutes to " + words[h2]!
+        }
+    }
+}
+
+timeInWords(h: 5, m: 47)
+
+//MARK: - Halloween Sale
+func howManyGames(p: Int, d: Int, m: Int, s: Int) -> Int {
+    var count = 0
+    var remainingMoney = s
+    
+    while remainingMoney >= 0{
+        let currentCost = max(p - d*count, m)
+        remainingMoney -= currentCost
+        count += 1
+    }
+    
+    return count - 1
+}
+
+howManyGames(p: 16, d: 2, m: 1, s: 9981)
 
 //MARK: - Minimum Distances
 func minimumDistances(a: [Int]) -> Int {
