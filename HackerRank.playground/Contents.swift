@@ -1,5 +1,56 @@
 import Foundation
 
+//MARK: - Flatland Space Stations
+func flatlandSpaceStations(n: Int, c: [Int]) -> Int {
+    let stations = c.sorted()
+    let endPointMax = max(stations.first ?? 0, n - (stations.last ?? 0) - 1)
+    let localMax = (0..<c.count).reduce(0) { (res, index) -> Int in
+        if index == c.count-1 {return res}
+        let mid = abs(stations[index+1] + stations[index]) / 2
+        let dist = min(abs(stations[index+1] - mid) , abs(stations[index] - mid))
+        return max(res, dist)
+    }
+    return max(endPointMax, localMax)
+
+}
+flatlandSpaceStations(n: 95, c: [68, 81, 46, 54, 30, 11, 19, 23, 22, 12, 38, 91, 48, 75, 26, 86, 29, 83, 62])
+
+func flatlandSpaceStations2(n: Int, c: [Int]) -> Int {
+    return (0..<n).reduce(0) { (res, index) -> Int in
+        if c.contains(index) {return res}
+        var minDist = Int.max
+        for station in c{
+            let d = abs(station - index)
+            if (d < minDist) {minDist = d}
+            if d == 1 {break}
+        }
+        return max(minDist, res)
+    }
+}
+//MARK: - Lisa's Workbook
+func workbook(n: Int, k: Int, arr: [Int]) -> Int {
+    var pageCount = 1
+    var magicProbCount = 0
+    for i in arr{
+        var chapterPage = 0
+        while (chapterPage * k)+1 <= i{
+            let startIndex = (chapterPage * k) + 1
+            let endIndex = min((chapterPage + 1) * k, i)
+            let probRange = (startIndex...endIndex)
+            print(probRange)
+            if probRange.contains(pageCount){
+                magicProbCount += 1
+            }
+            chapterPage += 1
+            pageCount += 1
+        }
+        
+    }
+    return magicProbCount
+}
+
+workbook(n: 5, k: 3, arr: [4, 2, 6, 1, 10])
+
 //MARK: - Service Lane
 func serviceLane(n: Int, width: [Int], cases: [[Int]]) -> [Int] {
     return cases.map { width[$0[0]...$0[1]].min() ?? 0 }
