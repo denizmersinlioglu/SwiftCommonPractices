@@ -1,0 +1,158 @@
+WWDC 2015 - Session 406: UI Testing in XCode
+
+UITesting
+- Find interact with UI elements
+- Validate UI Properties and state
+
+XCTest + Accessibility
+XCTest ->   Test case subclasses
+            Test methods
+            Assertions
+            Integrated with XCode
+            CI via XCode Server and XCodeBuild
+            Swift and Objc
+            Xcode 7 -> Unit (Correctness + Performance)
+                       UI (Correctness + Performance)
+             
+Accessibility ->    Rich semantic data about UI
+                    UIKit and AppKit integration
+                    APIs for fine tunning
+                    UI test interact with the app the way a user does
+                
+Getting Started -> Xcode target type + APIs + UI Recording
+UITesting Xcode Targets
+    - UI Tests have special requirements
+        - Execute in a seperate process
+        - Permission to use Accessibility
+    - New XCode target templates
+        - Cocoa Touch UI Testing Bundle
+        - Cocoa UI Testing Bundle
+
+APIs -> XCUIApplication + XCUIElement + XCUIElementQuery
+UI Recording -> Generete Code with the live interaction 
+
+You can set break points to the test implementation and po the elements in the scope.
+XCUIElement has a .value field. -> You can create XCTAsserts to these values.
+XCUIElement has a .exist field. -> You can check whether the UI element exist at all.
+
+let app = XCUIApplication()         -> Proxy object to our application
+app.launch()                        -> Launches the app in desired device.
+
+let addButton = app.buttons["Add"]  -> Query element and assing it to a variable.
+addButton.tap()                     -> Perform a built in action on the element.
+
+XCTAssertEqual(app.tables.cells.count, 1) -> Assert a condition to number of cells.
+
+XCUIApplication 
+    - Tests run in a seperate process
+    - Launch always spawns a new process. Clean state in each test run.
+    - Implicitly terminates any preexisting instance.
+    - Starting point to finding the elements of the app UI.
+
+XCUIElement
+    - Proxy for elements in application
+    - Elements have types: Button, Cell, Window...
+    - Elements has identifiers: Accessibility identifier, label, title...
+    - Find a element by combining type and identifier
+    - Application object is the root of the a tree of UI elements. 
+    - Element Uniqueness: 
+        - Every XCUIElement is backed by a Query.
+        - Query must resolve to exactly one match.
+        - No matches or multiple matches cause test failure.
+        - You can you exist property to test safely if the UI element exist in context.
+    - Event Synthesis
+        - Simulate user interaction on elements
+        - APIs are platform specific: 
+            - button.click() (OSX)  + button.tap() (iOS)
+            - textField.typeText("Hello") (OSX + iOS)
+
+XCUIElementQuery
+    - Queries resolve to collections of accessible elements. Visible to Accessibility
+        - Number of matches -> Count
+        - Specify by identifier: subscripting
+        - Specify by index: elementAtIndex()
+    - How Queries work: Relationships + Filtering
+        - Relationships: Descendants + Children + Containment
+        - Filtering: Element type + identifiers + Predicates
+    - Combining Relationships and Filtering
+        - descendantsMatchingType() 
+            -> let allButtons = app.descendantsMatchingType(.Button) => app.buttons
+            -> let allCells = table.descendantsMacthingType(.Cell) => table.cells
+            -> let allMenuItems = table.descendantsMatchingType(.MenuItem) => menu.menuItems
+        - childrenMatchingType() : Differentiates between any descendant and a direct child.
+            -> let childButtons = navBar.childrenMatchingType(.Button)
+        - containingType() : Find elements by describing their descendants.
+            -> let cellQuery = cells.containingType(.StaticText, identifier: "Groceries")
+    - Queries can be chained together : Output of each query is the input of the next one.
+        -> let labelsInTable = app.tables.staticTexts
+    - Getting Elements from Queries
+        -> subscripting => table.staticTexts["Groceries"]
+        -> Index => table.staticTexts.elementAtIndex(0)
+        -> Unique => app.navigationBars.element
+    - Evaluating Queries
+        - Queries are evaluated on demand
+            - XCUIElement: Synthesizing events + Reading property values
+            - XCUIElementQuery: .count (get count) + .allElementsBoundByAccessibilityElement (get all matches)
+        - Re-evaluated when UI changes
+    - Queries and Elements are similar to URLs. Creating a URL does not fetch a resource.
+        - URL could be invalid, error raised when requested.
+        - They are just specification for accessible elements in the tested application.
+
+Accessibility and UI Testing
+    - Accessibility data makes UI Testing possible. Quality of accessiblity data impacts the testing quality.
+    - Debugging Tips:
+        - Not accessible: Custom view subclasses + layers, sprites and other graphic objects.
+        - Poor accessiblity data
+        - Tools: UI Recording + Accessibility Inspector
+    - Improving Data: 
+        - Interface Builder Inspector
+        - API: UIAccessibility (iOS) + NSAccesibility (OS X)
+
+- In Report Navigator, you can inspect the all steps of each test. 
+    - You can press quick look button next to the each step to see exact state of the app at the step.
+    - You see complete assertion failure go to the logs section and inspect the assertion failure.
+
+- To identify a XCUIElement use UIRecording element Synthesizing.
+    - Element Synthesizing gives you tokens that gives different ways to access same element.
+    - Double click to token to convert it to text form.
+
+- Delete all cells using Predicate: 
+    while table.cells.count > 1 {
+        let count = table.cells.count
+        let cell = table.cells.elementAtIndex(1)
+        cell.buttons.matchingPredicate(NSPredicate(format: "label BEGINSWITH 'Delete'")).element.tap()
+        // XCTAssertEqual(cell.exist, false) -> cell value resolves itself again. DOESNT WORK
+        // p print(cell.debugDescription) -> To observe our bug.
+        XCTAssertEqual(table.cells.count, (count - 1))
+    }
+    
+- If some views causes bug while using UI Recording, the elements may be invisible to Accessibility.
+    - Use Accessibility Inspector to identify elements.
+    - Enable accessiblity from the storyboards. -> Give them a trait.
+
+Test Reports:
+    - Show results for all tests: Pass/Fail + failure reason + Performance Metrics
+    - Same UI in XCode and in XCode Server
+    - Per device result in XCode server
+    - UI testing additions: News Data + Screenshots + Nested Activities (API Calls)
+    - UI Testing APIs have several steps, Typing into a textField
+        - Wait for the app to idle
+        - Evaluate the textField query
+        - Synthesize the text input
+        - Wait for the app to idle
+
+Using UI Testing
+    - Complements unit testing
+    - Unit testing more precisely pinpoints failures
+    - UI testing covers broader aspects of functionality.
+    - Find the right blend of UI test and unit test for your project.
+    
+Candidates for UI testing:
+    - Demo sequences
+    - Common workflows
+    - Custom views
+    - Document creation, saving and opening
+
+ Related WWDC Sessions: 
+    - iOS Accessibility 
+    - Continuous integration and Code Coverage in XCode
